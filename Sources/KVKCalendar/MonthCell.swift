@@ -121,7 +121,7 @@ final class MonthCell: KVKCollectionViewCell {
                 
                 if count > titlesCount {
                     label.font = monthStyle.fontEventTitle
-                    label.lineBreakMode = .byTruncatingMiddle
+                    label.lineBreakMode = .byTruncatingTail
                     label.adjustsFontSizeToFitWidth = true
                     label.minimumScaleFactor = 0.95
                     label.textAlignment = .center
@@ -160,7 +160,7 @@ final class MonthCell: KVKCollectionViewCell {
 //                                                                  paragraphSpacing: 0)
 //                    } else {
                         label.font = monthStyle.fontEventTitle
-                        label.lineBreakMode = .byTruncatingMiddle
+                        label.lineBreakMode = .byTruncatingTail
                         label.adjustsFontSizeToFitWidth = true
                         label.minimumScaleFactor = 0.95
                         label.textAlignment = .left
@@ -417,7 +417,7 @@ final class MonthCell: KVKCollectionViewCell {
         paragraphStyle.lineSpacing = lineSpacing
         paragraphStyle.paragraphSpacing = paragraphSpacing
         paragraphStyle.headIndent = indentation
-        paragraphStyle.lineBreakMode = .byTruncatingMiddle
+        paragraphStyle.lineBreakMode = .byTruncatingTail
         
         return eventList.reduce(NSMutableAttributedString()) { (_, event) -> NSMutableAttributedString in
             let text: String
