@@ -164,9 +164,9 @@ final class MonthCell: KVKCollectionViewCell {
                         label.adjustsFontSizeToFitWidth = true
                         label.minimumScaleFactor = 0.95
                         label.textAlignment = .left
-                        label.backgroundColor = event.color?.value ?? .systemGray
+                        label.backgroundColor = event.color?.value.withAlphaComponent(0.3) ?? .systemGray
                         label.textColor = allDayStyle.textColor
-                        label.text = " \(event.title.timeline) "
+                        label.text = " \(event.title.month ?? "") "
                         label.setRoundCorners(monthStyle.eventCorners, radius: monthStyle.eventCornersRadius)
 //                    }
                     
