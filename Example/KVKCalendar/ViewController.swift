@@ -16,7 +16,7 @@ final class ViewController: UIViewController {
     private var selectDate: Date = {
         let formatter = DateFormatter()
         formatter.dateFormat = "dd.MM.yyyy"
-        return formatter.date(from: "14.12.2020") ?? Date()
+        return Date()
     }()
     
     private lazy var todayButton: UIBarButtonItem = {
@@ -35,6 +35,7 @@ final class ViewController: UIViewController {
         var style = Style()
         style.timeline.isHiddenStubEvent = false
         style.startWeekDay = .sunday
+        style.month.autoSelectionDateWhenScrolling = true
         style.systemCalendars = ["Calendar1", "Calendar2", "Calendar3"]
         if #available(iOS 13.0, *) {
             style.event.iconFile = UIImage(systemName: "paperclip")
@@ -208,9 +209,7 @@ extension ViewController: CalendarDataSource {
     }
     
     func willDisplayEventView(_ event: Event, frame: CGRect, date: Date?) -> EventViewGeneral? {
-        guard event.ID == "2" else { return nil }
-        
-        return CustomViewEvent(style: style, event: event, frame: frame)
+        return nil
     }
     
     func dequeueCell<T>(dateParameter: DateParameter, type: CalendarType, view: T, indexPath: IndexPath) -> KVKCalendarCellProtocol? where T: UIScrollView {
@@ -220,13 +219,8 @@ extension ViewController: CalendarDataSource {
                 cell.imageView.image = UIImage(named: "ic_stub")
             }
             return cell
-        case .day, .week, .month:
-            guard dateParameter.date?.day == Date().day && dateParameter.type != .empty else { return nil }
-            
-            let cell = (view as? UICollectionView)?.kvkDequeueCell(indexPath: indexPath) { (cell: CustomDayCell) in
-                cell.imageView.image = UIImage(named: "ic_stub")
-            }
-            return cell
+        case .month:
+            return nil
         case .list:
             guard dateParameter.date?.day == 14 else { return nil }
             
@@ -245,16 +239,7 @@ extension ViewController: CalendarDataSource {
     }
     
     func sizeForCell(_ date: Date?, type: CalendarType) -> CGSize? {
-        guard type == .month && UIDevice.current.userInterfaceIdiom == .phone else { return nil }
-        
-        switch style.month.scrollDirection {
-        case .vertical:
-            return CGSize(width: view.bounds.width / 7, height: 70)
-        case .horizontal:
-            return nil
-        @unknown default:
-            return nil
-        }
+       return nil
     }
 }
 

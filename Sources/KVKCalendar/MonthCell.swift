@@ -82,9 +82,9 @@ final class MonthCell: KVKCollectionViewCell {
                 return
             }
             
-            if UIDevice.current.userInterfaceIdiom == .phone, UIDevice.current.orientation.isLandscape {
-                return
-            }
+//            if UIDevice.current.userInterfaceIdiom == .phone, UIDevice.current.orientation.isLandscape {
+//                return
+//            }
             
             if monthStyle.showMonthNameInFirstDay {
                 showMonthName(day: day)
@@ -147,18 +147,18 @@ final class MonthCell: KVKCollectionViewCell {
                     }
                     return
                 } else {
-                    if !event.isAllDay || UIDevice.current.userInterfaceIdiom == .phone {
-                        label.attributedText = addIconBeforeLabel(eventList: [event],
-                                                                  textAttributes: [.font: monthStyle.fontEventTitle,
-                                                                                   .foregroundColor: monthStyle.colorEventTitle],
-                                                                  bulletAttributes: [.font: monthStyle.fontEventBullet,
-                                                                                     .foregroundColor: event.color?.value ?? .systemGray],
-                                                                  timeAttributes: [.font: monthStyle.fontEventTime,
-                                                                                   .foregroundColor: UIColor.systemGray],
-                                                                  indentation: 0,
-                                                                  lineSpacing: 0,
-                                                                  paragraphSpacing: 0)
-                    } else {
+//                    if !event.isAllDay || UIDevice.current.userInterfaceIdiom == .phone {
+//                        label.attributedText = addIconBeforeLabel(eventList: [event],
+//                                                                  textAttributes: [.font: monthStyle.fontEventTitle,
+//                                                                                   .foregroundColor: monthStyle.colorEventTitle],
+//                                                                  bulletAttributes: [.font: monthStyle.fontEventBullet,
+//                                                                                     .foregroundColor: event.color?.value ?? .systemGray],
+//                                                                  timeAttributes: [.font: monthStyle.fontEventTime,
+//                                                                                   .foregroundColor: UIColor.systemGray],
+//                                                                  indentation: 0,
+//                                                                  lineSpacing: 0,
+//                                                                  paragraphSpacing: 0)
+//                    } else {
                         label.font = monthStyle.fontEventTitle
                         label.lineBreakMode = .byTruncatingMiddle
                         label.adjustsFontSizeToFitWidth = true
@@ -168,7 +168,7 @@ final class MonthCell: KVKCollectionViewCell {
                         label.textColor = allDayStyle.textColor
                         label.text = " \(event.title.timeline) "
                         label.setRoundCorners(monthStyle.eventCorners, radius: monthStyle.eventCornersRadius)
-                    }
+//                    }
                     
                     let tap = UITapGestureRecognizer(target: self, action: #selector(tapOneEvent))
                     label.addGestureRecognizer(tap)
@@ -205,27 +205,27 @@ final class MonthCell: KVKCollectionViewCell {
             }
 
             if !monthStyle.isHiddenSeparator {
-                switch UIDevice.current.userInterfaceIdiom {
-                case .phone:
-                    let topLineLayer = CALayer()
-                    topLineLayer.name = "line_layer"
-                    
-                    if monthStyle.isHiddenSeparatorOnEmptyDate && day.type == .empty {
-                        layer.sublayers?.removeAll(where: { $0.name == "line_layer" })
-                    } else {
-                        topLineLayer.frame = CGRect(x: 0, y: 0, width: frame.width, height: monthStyle.widthSeparator)
-                        topLineLayer.backgroundColor = monthStyle.colorSeparator.cgColor
-                        layer.addSublayer(topLineLayer)
-                    }
-                default:
-                    if day.type != .empty {
-                        layer.borderWidth = monthStyle.isHiddenSeparatorOnEmptyDate ? 0 : monthStyle.widthSeparator
-                        layer.borderColor = monthStyle.isHiddenSeparatorOnEmptyDate ? UIColor.clear.cgColor : monthStyle.colorSeparator.cgColor
-                    } else {
+     //           switch UIDevice.current.userInterfaceIdiom {
+//                case .phone:
+//                    let topLineLayer = CALayer()
+//                    topLineLayer.name = "line_layer"
+//
+//                    if monthStyle.isHiddenSeparatorOnEmptyDate && day.type == .empty {
+//                        layer.sublayers?.removeAll(where: { $0.name == "line_layer" })
+//                    } else {
+//                        topLineLayer.frame = CGRect(x: 0, y: 0, width: frame.width, height: monthStyle.widthSeparator)
+//                        topLineLayer.backgroundColor = monthStyle.colorSeparator.cgColor
+//                        layer.addSublayer(topLineLayer)
+//                    }
+//                default:
+//                    if day.type != .empty {
+//                        layer.borderWidth = monthStyle.isHiddenSeparatorOnEmptyDate ? 0 : monthStyle.widthSeparator
+//                        layer.borderColor = monthStyle.isHiddenSeparatorOnEmptyDate ? UIColor.clear.cgColor : monthStyle.colorSeparator.cgColor
+//                    } else {
                         layer.borderWidth = monthStyle.widthSeparator
                         layer.borderColor = monthStyle.colorSeparator.cgColor
-                    }
-                }
+         //           }
+       //         }
             }
             populateCell(day: day, label: dateLabel, view: self)
         }
@@ -410,7 +410,8 @@ final class MonthCell: KVKCollectionViewCell {
     
     private func addIconBeforeLabel(eventList: [Event], textAttributes: [NSAttributedString.Key: Any], bulletAttributes: [NSAttributedString.Key: Any], timeAttributes: [NSAttributedString.Key: Any], bullet: String = "\u{2022}", indentation: CGFloat = 10, lineSpacing: CGFloat = 2, paragraphSpacing: CGFloat = 10) -> NSAttributedString {
         let paragraphStyle = NSMutableParagraphStyle()
-        paragraphStyle.alignment = UIDevice.current.userInterfaceIdiom == .pad ? .left : .center
+        paragraphStyle.alignment = .left
+        //UIDevice.current.userInterfaceIdiom == .pad ? .left : .center
         paragraphStyle.tabStops = [NSTextTab(textAlignment: .left, location: indentation, options: [:])]
         paragraphStyle.defaultTabInterval = indentation
         paragraphStyle.lineSpacing = lineSpacing
