@@ -88,8 +88,8 @@ public extension TimelineEventLayoutContext {
 
                 return (itemStart...itemEnd).contains(start)
                 || (itemStart...itemEnd).contains(endCalculated)
-                || (start...endCalculated).contains(itemStart)
-                || (start...endCalculated).contains(itemEnd)
+                || endCalculated > start ? (start...endCalculated).contains(itemStart) : false
+                || endCalculated > start ? (start...endCalculated).contains(itemEnd) : false
             }
 
             crossEvents[crossEventNew.eventTime.start] = crossEventNew
