@@ -31,7 +31,7 @@ public final class ListView: UIView, CalendarSettingProtocol {
     
     private var params: Parameters
     
-    private lazy var tableView: UITableView = {
+    public lazy var tableView: UITableView = {
         let table = UITableView()
         table.tableFooterView = UIView()
         table.dataSource = self

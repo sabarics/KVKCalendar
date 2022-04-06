@@ -73,7 +73,7 @@ public final class CalendarView: UIView {
         return year
     }()
     
-    private(set) lazy var listView: ListView = {
+    public lazy var listView: ListView = {
         let params = ListView.Parameters(style: style, data: listData, dataSource: self, delegate: self)
         let list = ListView(parameters: params, frame: frame)
         return list
