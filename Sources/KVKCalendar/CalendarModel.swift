@@ -345,7 +345,7 @@ public protocol CalendarDataSource: AnyObject {
     func dequeueCell<T: UIScrollView>(dateParameter: DateParameter, type: CalendarType, view: T, indexPath: IndexPath) -> KVKCalendarCellProtocol?
     
     /// Use this method to add a header view
-    func dequeueHeader<T: UIScrollView>(date: Date?, type: CalendarType, view: T, indexPath: IndexPath) -> KVKCalendarHeaderProtocol?
+    func dequeueHeader<T: UIScrollView>(date: Date?,isShowHeader:Bool, type: CalendarType, view: T, indexPath: IndexPath) -> KVKCalendarHeaderProtocol?
     
     @available(iOS 14.0, *)
     func willDisplayEventOptionMenu(_ event: Event, type: CalendarType) -> (menu: UIMenu, customButton: UIButton?)?

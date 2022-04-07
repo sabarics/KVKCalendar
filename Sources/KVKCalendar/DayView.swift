@@ -213,6 +213,10 @@ final class DayView: UIView {
 }
 
 extension DayView: DisplayDataSource {
+    func dequeueHeader<T>(date: Date?, isShowHeader: Bool, type: CalendarType, view: T, indexPath: IndexPath) -> KVKCalendarHeaderProtocol? where T : UIScrollView {
+        dataSource?.dequeueHeader(date: date, isShowHeader: isShowHeader, type: type, view: view, indexPath: indexPath)
+    }
+    
     
     func willDisplayEventView(_ event: Event, frame: CGRect, date: Date?) -> EventViewGeneral? {
         dataSource?.willDisplayEventView(event, frame: frame, date: date)

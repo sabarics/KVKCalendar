@@ -12,9 +12,10 @@ import Foundation
 public final class ListViewData {
     
     public struct SectionListView {
+        
         let date: Date
         var events: [Event]
-        
+        var isShowHeader:Bool = false
         public init(date: Date, events: [Event]) {
             self.date = date
             self.events = events
@@ -55,6 +56,23 @@ public final class ListViewData {
             accTemp[idx].events = accTemp[idx].events.sorted(by: { $0.start < $1.start })
             return accTemp
         })
+        
+        var tempSectionList : [SectionListView] = []
+        for (index,obj) in sections.enumerated(){
+            guard let idx = tempSectionList.firstIndex(where: { $0.date.year == obj.date.year && $0.date.month == obj.date.month }) else {
+                tempSectionList.append(sections[index])
+                continue
+            }
+        }
+        for (_,obj) in tempSectionList.enumerated(){
+            let firstIndex = sections.firstIndex{$0.date == obj.date}
+            if let firstIndex = firstIndex{
+                sections[firstIndex].isShowHeader = true
+            }
+        }
+        sections.forEach{ obj in
+            print("Date : \(obj.date) Header : \(obj.isShowHeader)")
+        }
     }
     
     func event(indexPath: IndexPath) -> Event {
