@@ -186,13 +186,13 @@ final class DayView: UIView {
     }
     
     func reloadEventViewer() {
-        guard UIDevice.current.userInterfaceIdiom == .pad else { return }
-        
-        var defaultFrame = timelinePage.frame
-        if let defaultWidth = style.timeline.widthEventViewer {
-            defaultFrame.size.width = defaultWidth
-        }
-        updateEventViewer(frame: defaultFrame)
+//        guard UIDevice.current.userInterfaceIdiom == .pad else { return }
+//        
+//        var defaultFrame = timelinePage.frame
+//        if let defaultWidth = style.timeline.widthEventViewer {
+//            defaultFrame.size.width = defaultWidth
+//        }
+//        updateEventViewer(frame: defaultFrame)
     }
     
     @discardableResult private func updateEventViewer(frame: CGRect) -> CGRect? {
@@ -319,34 +319,34 @@ extension DayView: CalendarSettingProtocol {
             timelineFrame.size.height = frame.height
         }
         
-        if UIDevice.current.userInterfaceIdiom == .pad {
-            if let defaultWidth = style.timeline.widthEventViewer {
-                timelineFrame.size.width = frame.width - defaultWidth
-                
-                if let idx = subviews.firstIndex(where: { $0.tag == tagEventViewer }) {
-                    subviews[idx].removeFromSuperview()
-                    var viewerFrame = timelineFrame
-                    
-                    let width: CGFloat
-                    if UIDevice.current.orientation.isPortrait {
-                        width = frame.width * 0.5
-                        timelineFrame.size.width = frame.width - width
-                    } else {
-                        width = defaultWidth
-                    }
-                    
-                    viewerFrame.size.width = width
-                    if let resultViewerFrame = updateEventViewer(frame: viewerFrame) {
-                        // notify when we did change the frame of viewer
-                        delegate?.didChangeViewerFrame(resultViewerFrame)
-                    }
-                }
-            } else {
-                timelineFrame.size.width = frame.width
-            }
-        } else {
+//        if UIDevice.current.userInterfaceIdiom == .pad {
+//            if let defaultWidth = style.timeline.widthEventViewer {
+//                timelineFrame.size.width = frame.width - defaultWidth
+//
+//                if let idx = subviews.firstIndex(where: { $0.tag == tagEventViewer }) {
+//                    subviews[idx].removeFromSuperview()
+//                    var viewerFrame = timelineFrame
+//
+//                    let width: CGFloat
+//                    if UIDevice.current.orientation.isPortrait {
+//                        width = frame.width * 0.5
+//                        timelineFrame.size.width = frame.width - width
+//                    } else {
+//                        width = defaultWidth
+//                    }
+//
+//                    viewerFrame.size.width = width
+//                    if let resultViewerFrame = updateEventViewer(frame: viewerFrame) {
+//                        // notify when we did change the frame of viewer
+//                        delegate?.didChangeViewerFrame(resultViewerFrame)
+//                    }
+//                }
+//            } else {
+//                timelineFrame.size.width = frame.width
+//            }
+//        } else {
             timelineFrame.size.width = frame.width
-        }
+//        }
         
         timelinePage.frame = timelineFrame
         timelinePage.timelineView?.reloadFrame(CGRect(origin: .zero, size: timelineFrame.size))
