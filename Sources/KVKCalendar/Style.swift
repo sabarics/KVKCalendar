@@ -62,13 +62,27 @@ public struct Style {
 public struct HeaderScrollStyle {
     public var titleDays: [String] = []
     public var heightHeaderWeek: CGFloat = 50
-    public var heightSubviewHeader: CGFloat = 30
+    
+    public var heightSubviewHeader: CGFloat = 30 {
+        didSet {
+            heightSubviewHeaderCached = heightSubviewHeader
+        }
+    }
+    private var heightSubviewHeaderCached: CGFloat = 30
     
     @available(swift, deprecated: 0.4.1, obsoleted: 0.4.2, renamed: "heightSubviewHeader")
     public var heightTitleDate: CGFloat = 30
     
     public var colorBackground: UIColor = gainsboro.withAlphaComponent(0.4)
-    public var isHiddenSubview: Bool = false
+    public var isHiddenSubview: Bool = false {
+        didSet {
+            if isHiddenSubview {
+                heightSubviewHeader = 0
+            } else {
+                heightSubviewHeader = heightSubviewHeaderCached
+            }
+        }
+    }
     
     @available(swift, deprecated: 0.4.1, obsoleted: 0.4.2, renamed: "isHiddenSubview")
     public var isHiddenTitleDate: Bool = false
@@ -94,8 +108,14 @@ public struct HeaderScrollStyle {
         return format
     }()
     
+    @available(swift, deprecated: 0.5.9, obsoleted: 0.6.0, renamed: "titleDateColor")
     public var colorTitleDate: UIColor = .black
+    public var titleDateColor: UIColor = .black
+        
+    @available(swift, deprecated: 0.5.9, obsoleted: 0.6.0, renamed: "titleDateColorCorner")
     public var colorTitleCornerDate: UIColor = .red
+    public var titleDateColorCorner: UIColor = .red
+    
     public var colorDate: UIColor = .black
     public var fontDate: UIFont = .systemFont(ofSize: 17)
     public var colorNameDay: UIColor = .black
@@ -530,9 +550,9 @@ extension Style {
             newStyle.headerScroll.colorNameEmptyDay = UIColor.useForStyle(dark: .systemGray6,
                                                                           white: newStyle.headerScroll.colorNameEmptyDay)
             newStyle.headerScroll.colorBackground = UIColor.useForStyle(dark: .black, white: newStyle.headerScroll.colorBackground)
-            newStyle.headerScroll.colorTitleDate = UIColor.useForStyle(dark: .white, white: newStyle.headerScroll.colorTitleDate)
-            newStyle.headerScroll.colorTitleCornerDate = UIColor.useForStyle(dark: .systemRed,
-                                                                             white: newStyle.headerScroll.colorTitleCornerDate)
+            newStyle.headerScroll.titleDateColor = UIColor.useForStyle(dark: .white, white: newStyle.headerScroll.titleDateColor)
+            newStyle.headerScroll.titleDateColorCorner = UIColor.useForStyle(dark: .systemRed,
+                                                                             white: newStyle.headerScroll.titleDateColorCorner)
             newStyle.headerScroll.colorDate = UIColor.useForStyle(dark: .white, white: newStyle.headerScroll.colorDate)
             newStyle.headerScroll.colorNameDay = UIColor.useForStyle(dark: .white, white: newStyle.headerScroll.colorNameDay)
             newStyle.headerScroll.colorCurrentDate = UIColor.useForStyle(dark: .systemGray6,
@@ -777,8 +797,8 @@ extension HeaderScrollStyle: Equatable {
         && compare(\.isHiddenSubview)
         && compare(\.titleFormatter)
         && compare(\.weekdayFormatter)
-        && compare(\.colorTitleDate)
-        && compare(\.colorTitleCornerDate)
+        && compare(\.titleDateColor)
+        && compare(\.titleDateColorCorner)
         && compare(\.colorDate)
         && compare(\.fontDate)
         && compare(\.colorNameDay)
