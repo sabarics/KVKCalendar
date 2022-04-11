@@ -119,7 +119,7 @@ extension ListView: UITableViewDataSource, UITableViewDelegate {
         }
         
         let event = params.data.event(indexPath: indexPath)
-        if let cell = params.dataSource?.dequeueCell(dateParameter: .init(date: event.start), type: .list, view: tableView, indexPath: indexPath) as? UITableViewCell {
+        if let cell = params.dataSource?.dequeueCell(dateParameter: .init(date: event.start), type: .list, view: tableView, indexPath: indexPath,event:event) as? UITableViewCell {
             return cell
         } else {
             return tableView.kvkDequeueCell(indexPath: indexPath) { (cell: ListViewCell) in
