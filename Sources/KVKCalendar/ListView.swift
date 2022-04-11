@@ -138,7 +138,7 @@ extension ListView: UITableViewDataSource, UITableViewDelegate {
         
         let date = params.data.sections[section].date
         let isShowHeader = params.data.sections[section].isShowHeader
-        if let headerView = params.dataSource?.dequeueHeader(date: date,isShowHeader:isShowHeader, type: .list, view: tableView, indexPath: IndexPath(row: 0, section: section)) as? UIView {
+        if let headerView = params.dataSource?.dequeueHeader(date: date,isShowHeader:isShowHeader, type: .list, view: tableView, indexPath: IndexPath(row: 0, section: section),event:params.data.sections[section].events.first) as? UIView {
             return headerView
         } else {
             return tableView.kvkDequeueView { (view: ListViewHeader) in
