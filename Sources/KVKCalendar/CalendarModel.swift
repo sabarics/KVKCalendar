@@ -345,7 +345,7 @@ public protocol CalendarDataSource: AnyObject {
     func dequeueCell<T: UIScrollView>(dateParameter: DateParameter, type: CalendarType, view: T, indexPath: IndexPath,event:Event?) -> KVKCalendarCellProtocol?
     
     /// Use this method to add a header view
-    func dequeueHeader<T: UIScrollView>(date: Date?,isShowHeader:Bool, type: CalendarType, view: T, indexPath: IndexPath,event:Event?) -> KVKCalendarHeaderProtocol?
+    func dequeueHeader<T: UIScrollView>(date: Date?,isShowHeader:Bool, type: CalendarType, view: T, indexPath: IndexPath,events:[Event]) -> KVKCalendarHeaderProtocol?
     
     @available(iOS 14.0, *)
     func willDisplayEventOptionMenu(_ event: Event, type: CalendarType) -> (menu: UIMenu, customButton: UIButton?)?
@@ -434,6 +434,9 @@ public protocol CalendarDelegate: AnyObject {
     
     /// deselect event on timeline
     func didDeselectEvent(_ event: Event, animated: Bool)
+    
+    /// get a willDisplay event
+    func willDisplaySections(_ event: Event, type: CalendarType,list:[SectionListView], indexPath:IndexPath)
 }
 
 public extension CalendarDelegate {

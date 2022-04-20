@@ -117,6 +117,18 @@ final class ViewController: UIViewController {
 // MARK: - Calendar delegate
 
 extension ViewController: CalendarDelegate {
+    func willDisplaySections(_ event: Event, type: CalendarType, list: [SectionListView], indexPath: IndexPath) {
+        if (list.count - 1)  == indexPath.section{
+            //Last load
+            print("Bottom Load")
+        }
+        else if indexPath.section == 0 {
+            //First load
+            print("Top Load")
+        }
+        print("Will Display Section:\(list.count)-Section\(indexPath.row)")
+    }
+    
     func didChangeEvent(_ event: Event, start: Date?, end: Date?) {
         var eventTemp = event
         guard let startTemp = start, let endTemp = end else { return }
@@ -184,6 +196,14 @@ extension ViewController: CalendarDelegate {
 // MARK: - Calendar datasource
 
 extension ViewController: CalendarDataSource {
+    func dequeueCell<T>(dateParameter: DateParameter, type: CalendarType, view: T, indexPath: IndexPath, event: Event?) -> KVKCalendarCellProtocol? where T : UIScrollView {
+        return nil
+    }
+    
+    func dequeueHeader<T>(date: Date?, isShowHeader: Bool, type: CalendarType, view: T, indexPath: IndexPath,events:[Event]) -> KVKCalendarHeaderProtocol? where T : UIScrollView {
+        return nil
+    }
+    
     @available(iOS 14.0, *)
     func willDisplayEventOptionMenu(_ event: Event, type: CalendarType) -> (menu: UIMenu, customButton: UIButton?)? {
         guard type == .day else { return nil }
@@ -272,7 +292,7 @@ extension ViewController {
                                         list: item.title)
             } else {
                 event.title = TextEvent(timeline: "\(startTime) - \(endTime)\n\(item.title)",
-                                        month: "\(item.title) \(startTime)",
+                                        month: "one",
                                         list: "\(startTime) - \(endTime) \(item.title)")
             }
             
@@ -379,5 +399,32 @@ final class CustomViewEvent: EventViewGeneral {
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+}
+
+extension Date {
+    func startOfMonth() -> Date {
+        return Calendar.current.date(from: Calendar.current.dateComponents([.year, .month], from: Calendar.current.startOfDay(for: self)))!
+    }
+    
+    func endOfMonth() -> Date {
+        return Calendar.current.date(byAdding: DateComponents(month: 1, day: -1), to: self.startOfMonth())!
+    }
+    
+    
+    var startOfWeek: Date? {
+        let calendar = Calendar.current
+        guard let sunday = calendar.date(from: calendar.dateComponents([.yearForWeekOfYear, .weekOfYear], from: self)) else { return nil }
+        return calendar.date(byAdding: .day, value: 1, to: sunday)
+    }
+    
+    var endOfWeek: Date? {
+        let calendar = Calendar.current
+        guard let sunday = calendar.date(from: calendar.dateComponents([.yearForWeekOfYear, .weekOfYear], from: self)) else { return nil }
+        return calendar.date(byAdding: .day, value: 7, to: sunday)
+    }
+    
+    func startOfWeeks(using calendar: Calendar = Calendar.current) -> Date {
+        calendar.dateComponents([.calendar, .yearForWeekOfYear, .weekOfYear], from: self).date!
     }
 }

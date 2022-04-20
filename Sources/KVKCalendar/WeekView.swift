@@ -216,8 +216,8 @@ extension WeekView: DisplayDataSource {
         dataSource?.dequeueCell(dateParameter: dateParameter, type: type, view: view, indexPath: indexPath, event: event)
     }
     
-    func dequeueHeader<T>(date: Date?, isShowHeader: Bool, type: CalendarType, view: T, indexPath: IndexPath,event:Event?) -> KVKCalendarHeaderProtocol? where T : UIScrollView {
-        dataSource?.dequeueHeader(date: date, isShowHeader: isShowHeader, type: type, view: view, indexPath: indexPath,event:event)
+    func dequeueHeader<T>(date: Date?, isShowHeader: Bool, type: CalendarType, view: T, indexPath: IndexPath,events:[Event]) -> KVKCalendarHeaderProtocol? where T : UIScrollView {
+        dataSource?.dequeueHeader(date: date, isShowHeader: isShowHeader, type: type, view: view, indexPath: indexPath,events:events)
     }
     
     

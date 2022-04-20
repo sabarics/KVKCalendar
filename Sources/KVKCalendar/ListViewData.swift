@@ -9,18 +9,18 @@
 
 import Foundation
 
-public final class ListViewData {
+public struct SectionListView {
     
-    public struct SectionListView {
-        
-        let date: Date
-        var events: [Event]
-        var isShowHeader:Bool = false
-        public init(date: Date, events: [Event]) {
-            self.date = date
-            self.events = events
-        }
+    let date: Date
+    var events: [Event]
+    var isShowHeader:Bool = false
+    public init(date: Date, events: [Event]) {
+        self.date = date
+        self.events = events
     }
+}
+
+public final class ListViewData {
     
     var sections: [SectionListView]
     var date: Date
