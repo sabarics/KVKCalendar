@@ -70,9 +70,6 @@ public final class ListViewData {
                 sections[firstIndex].isShowHeader = true
             }
         }
-        sections.forEach{ obj in
-            print("Date : \(obj.date) Header : \(obj.isShowHeader)")
-        }
     }
     
     func event(indexPath: IndexPath) -> Event {

@@ -15,6 +15,11 @@ public struct DateParameter {
     public var type: DayType?
 }
 
+public enum EventScrollDirection:String{
+    case up
+    case down
+}
+
 public enum TimeHourSystem: Int {
     @available(swift, deprecated: 0.3.6, obsoleted: 0.3.7, renamed: "twelve")
     case twelveHour = 0
@@ -436,7 +441,7 @@ public protocol CalendarDelegate: AnyObject {
     func didDeselectEvent(_ event: Event, animated: Bool)
     
     /// get a willDisplay event
-    func willDisplaySections(_ event: Event, type: CalendarType,list:[SectionListView], indexPath:IndexPath)
+    func willDisplaySections(_ event: Event, type: CalendarType, tableView: UITableView,list:[SectionListView], indexPath:IndexPath,scrollDirection:EventScrollDirection)
 }
 
 public extension CalendarDelegate {

@@ -127,7 +127,7 @@ extension CalendarView {
         case .year:
             yearView.setDate(date)
         case .list:
-            listView.setDate(date)
+            listView.setDate(date, animated: animated)
         }
     }
     
@@ -307,8 +307,8 @@ extension CalendarView: DisplayDataSource {
 }
 
 extension CalendarView: DisplayDelegate {
-    public func willDisplaySections(_ event: Event, type: CalendarType, list: [SectionListView], indexPath: IndexPath) {
-        delegate?.willDisplaySections(event, type: type, list: list, indexPath: indexPath)
+    public func willDisplaySections(_ event: Event, type: CalendarType,tableView: UITableView, list: [SectionListView], indexPath: IndexPath,scrollDirection:EventScrollDirection) {
+        delegate?.willDisplaySections(event, type: type, tableView: tableView, list: list, indexPath: indexPath,scrollDirection: scrollDirection)
     }
     
     public func sizeForHeader(_ date: Date?, type: CalendarType) -> CGSize? {
