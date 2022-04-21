@@ -204,9 +204,11 @@ extension ListView: UITableViewDataSource, UITableViewDelegate {
         var direction: EventScrollDirection = .netural
         if lastVelocityYSign < 0{
             direction = .down
+            lastVelocityYSign = 0
         }
         else if lastVelocityYSign > 0{
             direction = .up
+            lastVelocityYSign = 0
         }
         params.delegate?.willDisplaySections(event, type: .list, tableView: tableView, list: params.data.sections, indexPath: indexPath,scrollDirection: direction)
     }
