@@ -71,6 +71,51 @@ extension CalendarView {
         }
     }
     
+    public func reloadSectionData(indexPath:IndexPath) {
+        
+        func reload(systemEvents: [EKEvent] = []) {
+            let events = dataSource?.eventsForCalendar(systemEvents: systemEvents) ?? []
+            
+            switch parameters.type {
+            case .day:
+                dayView.reloadData(events)
+            case .week:
+                weekView.reloadData(events)
+            case .month:
+                monthView.reloadData(events)
+            case .list:
+                listView.reloadSectionData(events, indexpath: indexPath)
+            default:
+                break
+            }
+        }
+        
+        if !style.systemCalendars.isEmpty {
+            requestAccessSystemCalendars(style.systemCalendars, store: eventStore) { [weak self] (result) in
+                guard let self = self else {
+                    DispatchQueue.main.async {
+                        reload()
+                    }
+                    return
+                }
+                
+                if result {
+                    self.getSystemEvents(store: self.eventStore, calendars: self.style.systemCalendars) { (systemEvents) in
+                        DispatchQueue.main.async {
+                            reload(systemEvents: systemEvents)
+                        }
+                    }
+                } else {
+                    DispatchQueue.main.async {
+                        reload()
+                    }
+                }
+            }
+        } else {
+            reload()
+        }
+    }
+    
     public func scrollTo(_ date: Date, animated: Bool? = nil) {
         switch parameters.type {
         case .day:

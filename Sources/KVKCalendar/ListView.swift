@@ -80,6 +80,11 @@ public final class ListView: UIView, CalendarSettingProtocol {
         tableView.reloadData()
     }
     
+    func reloadSectionData(_ events: [Event],indexpath:IndexPath) {
+        params.data.reloadEvents(events)
+        tableView.reloadSections(IndexSet(integer: indexpath.section), with: .none)
+    }
+    
     func showSkeletonVisible(_ visible: Bool) {
         params.data.isSkeletonVisible = visible
         tableView.reloadData()

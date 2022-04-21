@@ -11,9 +11,9 @@ import Foundation
 
 public struct SectionListView {
     
-    let date: Date
-    var events: [Event]
-    var isShowHeader:Bool = false
+    public let date: Date
+    public var events: [Event]
+    public var isShowHeader:Bool = false
     public init(date: Date, events: [Event]) {
         self.date = date
         self.events = events
