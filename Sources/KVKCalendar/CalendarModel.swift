@@ -18,6 +18,7 @@ public struct DateParameter {
 public enum EventScrollDirection:String{
     case up
     case down
+    case netural
 }
 
 public enum TimeHourSystem: Int {

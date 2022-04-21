@@ -201,8 +201,11 @@ extension ListView: UITableViewDataSource, UITableViewDelegate {
     
     public func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         let event = params.data.event(indexPath: indexPath)
-        var direction: EventScrollDirection = .down
-        if lastVelocityYSign > 0{
+        var direction: EventScrollDirection = .netural
+        if lastVelocityYSign < 0{
+            direction = .down
+        }
+        else if lastVelocityYSign > 0{
             direction = .up
         }
         params.delegate?.willDisplaySections(event, type: .list, tableView: tableView, list: params.data.sections, indexPath: indexPath,scrollDirection: direction)
