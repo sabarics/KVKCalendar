@@ -43,6 +43,7 @@ public final class ListViewData {
     }
     
     func reloadEvents(_ events: [Event]) {
+        print("------------------Strat Time - \(Date())-------------------------")
         sections = events.reduce([], { (acc, event) -> [SectionListView] in
             var accTemp = acc
             
@@ -70,6 +71,7 @@ public final class ListViewData {
                 sections[firstIndex].isShowHeader = true
             }
         }
+        print("------------------End Time - \(Date())-------------------------")
     }
     
     func event(indexPath: IndexPath) -> Event {
