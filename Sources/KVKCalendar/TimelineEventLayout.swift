@@ -55,9 +55,9 @@ public extension TimelineEventLayoutContext {
                 if 0...59 ~= end.minute {
                     let minutePercent = 59.0 / CGFloat(end.minute)
                     let newY = (calculatedTimeY + timeTemp.frame.height) / minutePercent
-                    newFrame.size.height = summHeight + newY - style.timeline.offsetEvent
+                    newFrame.size.height = summHeight + newY - (start == end ? -3 :  style.timeline.offsetEvent)
                 } else {
-                    newFrame.size.height = summHeight - style.timeline.offsetEvent
+                    newFrame.size.height = summHeight - (start == end ? -3 :  style.timeline.offsetEvent)
                 }
             } else if end.day != date?.day {
                 newFrame.size.height = (CGFloat(time.tag) * (calculatedTimeY + time.frame.height)) - newFrame.origin.y + (time.frame.height / 2)
@@ -80,9 +80,9 @@ public extension TimelineEventLayoutContext {
             let start = event.start.timeIntervalSince1970
             let end = event.end.timeIntervalSince1970
             var crossEventNew = CrossEvent(eventTime: EventTime(start: start, end: end))
-            let endCalculated: TimeInterval = crossEventNew.eventTime.end - TimeInterval(style.timeline.offsetEvent)
+            let endCalculated: TimeInterval = crossEventNew.eventTime.end - (start == end ? TimeInterval(0) : TimeInterval(style.timeline.offsetEvent))
             crossEventNew.events = events.filter { item in
-                let itemEnd = item.end.timeIntervalSince1970 - TimeInterval(style.timeline.offsetEvent)
+                let itemEnd = item.end.timeIntervalSince1970 - (start == end ? TimeInterval(0) : TimeInterval(style.timeline.offsetEvent))
                 let itemStart = item.start.timeIntervalSince1970
                 guard itemEnd > itemStart else { return false }
 
