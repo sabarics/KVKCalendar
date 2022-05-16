@@ -14,19 +14,23 @@ public final class ListView: UIView, CalendarSettingProtocol {
     public struct Parameters {
         var style: Style
         let data: ListViewData
-        weak var dataSource: CalendarDataSource?
-        weak var delegate: CalendarDelegate?
         
-        public init(style: Style, data: ListViewData, dataSource: CalendarDataSource?, delegate: CalendarDelegate?) {
+        public init(style: Style, data: ListViewData) {
             self.style = style
             self.data = data
-            self.dataSource = dataSource
-            self.delegate = delegate
         }
     }
     
+    public weak var dataSource: CalendarDataSource?
+    public weak var delegate: CalendarDelegate?
+    
     var style: Style {
-        params.style
+        get {
+            params.style
+        }
+        set {
+            params.style = newValue
+        }
     }
     
     private var params: Parameters
@@ -46,33 +50,40 @@ public final class ListView: UIView, CalendarSettingProtocol {
         params.style.list
     }
     
-    public init(parameters: Parameters, frame: CGRect) {
+    public init(parameters: Parameters, frame: CGRect? = nil) {
         self.params = parameters
-        super.init(frame: frame)
-        setUI()
+        super.init(frame: frame ?? .zero)
+        addSubview(tableView)
+        setupConstraints()
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func updateStyle(_ style: Style) {
-        params.style = style
-        setUI()
+    private func setupConstraints() {
+        tableView.translatesAutoresizingMaskIntoConstraints = false
+        
+        let top = tableView.topAnchor.constraint(equalTo: topAnchor)
+        let bottom = tableView.bottomAnchor.constraint(equalTo: bottomAnchor)
+        let left = tableView.leftAnchor.constraint(equalTo: leftAnchor)
+        let right = tableView.rightAnchor.constraint(equalTo: rightAnchor)
+        NSLayoutConstraint.activate([top, bottom, left, right])
     }
     
-    func setUI() {
-        subviews.forEach({ $0.removeFromSuperview() })
-        
+    func updateStyle(_ style: Style, force: Bool) {
+        self.style = style
+        setUI(reload: force)
+    }
+    
+    func setUI(reload: Bool = false) {
         backgroundColor = listStyle.backgroundColor
         tableView.backgroundColor = listStyle.backgroundColor
-        tableView.frame = CGRect(origin: .zero, size: frame.size)
-        addSubview(tableView)
     }
     
     func reloadFrame(_ frame: CGRect) {
         self.frame = frame
-        tableView.frame = CGRect(origin: .zero, size: frame.size)
+        layoutIfNeeded()
     }
     
     func reloadData(_ events: [Event]) {
@@ -90,22 +101,22 @@ public final class ListView: UIView, CalendarSettingProtocol {
         tableView.reloadData()
     }
     
-    func setDate(_ date: Date, animated: Bool? = nil) {
+    func setDate(_ date: Date, animated: Bool) {
         params.data.date = date
         
         guard !params.data.isSkeletonVisible else { return }
         
         if let idx = params.data.sections.firstIndex(where: { $0.date.year == date.year && $0.date.month == date.month && $0.date.day == date.day }) {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                self.tableView.scrollToRow(at: IndexPath(row: 0, section: idx), at: .top, animated: animated ?? false)
+                self.tableView.scrollToRow(at: IndexPath(row: 0, section: idx), at: .top, animated: animated)
             }
         } else if let idx = params.data.sections.firstIndex(where: { $0.date.year == date.year && $0.date.month == date.month }) {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                self.tableView.scrollToRow(at: IndexPath(row: 0, section: idx), at: .top, animated: animated ?? false)
+                self.tableView.scrollToRow(at: IndexPath(row: 0, section: idx), at: .top, animated: animated)
             }
         } else if let idx = params.data.sections.firstIndex(where: { $0.date.year == date.year }) {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                self.tableView.scrollToRow(at: IndexPath(row: 0, section: idx), at: .top, animated: animated ?? false)
+                self.tableView.scrollToRow(at: IndexPath(row: 0, section: idx), at: .top, animated: animated)
             }
         }
     }
@@ -130,7 +141,7 @@ extension ListView: UITableViewDataSource, UITableViewDelegate {
         }
         
         let event = params.data.event(indexPath: indexPath)
-        if let cell = params.dataSource?.dequeueCell(dateParameter: .init(date: event.start), type: .list, view: tableView, indexPath: indexPath,event:event) as? UITableViewCell {
+        if let cell = dataSource?.dequeueCell(dateParameter: .init(date: event.start), type: .list, view: tableView, indexPath: indexPath,event:event) as? UITableViewCell {
             return cell
         } else {
             return tableView.kvkDequeueCell(indexPath: indexPath) { (cell: ListViewCell) in
@@ -149,7 +160,7 @@ extension ListView: UITableViewDataSource, UITableViewDelegate {
         
         let date = params.data.sections[section].date
         let isShowHeader = params.data.sections[section].isShowHeader
-        if let headerView = params.dataSource?.dequeueHeader(date: date,isShowHeader:isShowHeader, type: .list, view: tableView, indexPath: IndexPath(row: 0, section: section),events:params.data.sections[section].events) as? UIView {
+        if let headerView = dataSource?.dequeueHeader(date: date,isShowHeader:isShowHeader, type: .list, view: tableView, indexPath: IndexPath(row: 0, section: section),events:params.data.sections[section].events) as? UIView {
             return headerView
         } else {
             return tableView.kvkDequeueView { (view: ListViewHeader) in
@@ -157,7 +168,7 @@ extension ListView: UITableViewDataSource, UITableViewDelegate {
                                                        formatter: params.style.list.headerDateFormatter,
                                                        locale: params.style.locale)
                 view.didTap = { [weak self] in
-                    self?.params.delegate?.didSelectDates([date], type: .list, frame: view.frame)
+                    self?.delegate?.didSelectDates([date], type: .list, frame: view.frame)
                 }
             }
         }
@@ -169,9 +180,9 @@ extension ListView: UITableViewDataSource, UITableViewDelegate {
         }
         
         let event = params.data.event(indexPath: indexPath)
-        if let height = params.delegate?.sizeForCell(event.start, type: .list)?.height {
+        if let height = delegate?.sizeForCell(event.start, type: .list)?.height {
             return height
-        } else {
+        } else{
             return UITableView.automaticDimension
         }
     }
@@ -182,7 +193,7 @@ extension ListView: UITableViewDataSource, UITableViewDelegate {
         }
         
         let date = params.data.sections[section].date
-        if let height = params.delegate?.sizeForHeader(date, type: .list)?.height {
+        if let height = delegate?.sizeForHeader(date, type: .list)?.height {
             return height
         } else if let height = params.style.list.heightHeaderView {
             return height
@@ -196,7 +207,7 @@ extension ListView: UITableViewDataSource, UITableViewDelegate {
         
         let event = params.data.event(indexPath: indexPath)
         let frameCell = tableView.cellForRow(at: indexPath)?.frame
-        params.delegate?.didSelectEvent(event, type: .list, frame: frameCell)
+        delegate?.didSelectEvent(event, type: .list, frame: frameCell)
     }
     
     public func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
@@ -210,7 +221,7 @@ extension ListView: UITableViewDataSource, UITableViewDelegate {
             direction = .up
             lastVelocityYSign = 0
         }
-        params.delegate?.willDisplaySections(event, type: .list, tableView: tableView, list: params.data.sections, indexPath: indexPath,scrollDirection: direction)
+        delegate?.willDisplaySections(event, type: .list, tableView: tableView, list: params.data.sections, indexPath: indexPath,scrollDirection: direction)
     }
     
     public func scrollViewDidScroll(_ scrollView: UIScrollView) {

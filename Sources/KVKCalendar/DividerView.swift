@@ -53,7 +53,12 @@ final class DividerView: UIView {
 extension DividerView: CalendarSettingProtocol {
     
     var style: Style {
-        parameters.style
+        get {
+            parameters.style
+        }
+        set {
+            parameters.style = newValue
+        }
     }
     
     func reloadFrame(_ frame: CGRect) {
@@ -62,7 +67,7 @@ extension DividerView: CalendarSettingProtocol {
         setUI()
     }
     
-    func updateStyle(_ style: Style) {
+    func updateStyle(_ style: Style, force: Bool) {
         parameters.style = style
     }
     

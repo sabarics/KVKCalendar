@@ -14,19 +14,19 @@ public extension Date {
     }
     
     var isSunday: Bool {
-        return weekday == 1
+        weekday == 1
     }
     
     var isSaturday: Bool {
-        return weekday == 7
+        weekday == 7
     }
     
     var isWeekend: Bool {
-        return isSunday || isSaturday
+        isSunday || isSaturday
     }
     
     var isWeekday: Bool {
-        return !isWeekend
+        !isWeekend
     }
     
     var minute: Int {
@@ -142,5 +142,26 @@ public extension Date {
         components.second = Int(value)
         let date = Calendar.current.date(byAdding: components, to: self)
         return date ?? self
+    }
+        
+    func isSameDay(otherDate: Date) -> Bool {
+        let diff = Calendar.current.dateComponents([.day], from: self, to: otherDate)
+        if diff.day == 0 {
+            return true
+        } else {
+            return false
+        }
+    }
+    
+    func addingTo(_ component: Calendar.Component, value: Int) -> Date? {
+        if let newDate = Calendar.current.date(byAdding: component, value: value, to: self) {
+            return newDate
+        }
+        
+        return nil
+    }
+    
+    func isEqual(_ date: Date) -> Bool {
+        date.year == year && date.month == month && date.day == day
     }
 }

@@ -56,18 +56,20 @@ final class TimelinePageView: UIView {
         self.currentIndex = (pages.count / 2) - 1
         super.init(frame: frame)
         
-        let view = pages[currentIndex]
-        let container = TimelineContainerVC(index: currentIndex, contentView: view)
-        mainPageView.setViewControllers([container], direction: .forward, animated: false, completion: nil)
-        mainPageView.view.frame = CGRect(origin: .zero, size: frame.size)
-        addSubview(mainPageView.view)
+        if !pages.isEmpty {
+            let view = pages[currentIndex]
+            let container = TimelineContainerVC(index: currentIndex, contentView: view)
+            mainPageView.setViewControllers([container], direction: .forward, animated: false, completion: nil)
+            mainPageView.view.frame = CGRect(origin: .zero, size: frame.size)
+            addSubview(mainPageView.view)
+        }
         
         mainPageView.dataSource = self
         mainPageView.delegate = self
     }
     
-    func updateStyle(_ style: Style) {
-        pages.forEach { $0.value.updateStyle(style) }
+    func updateStyle(_ style: Style, force: Bool) {
+        pages.forEach { $0.value.updateStyle(style, force: force) }
     }
     
     func reloadPages(excludeCurrentPage: Bool = false) {
@@ -104,7 +106,7 @@ final class TimelinePageView: UIView {
         }
     }
     
-    func reloadCacheControllers() {
+    func reloadCachedControllers() {
         pages = pages.reduce([:], { (acc, item) -> [Int: TimelineView] in
             var accTemp = acc
             item.value.reloadFrame(CGRect(origin: .zero, size: bounds.size))

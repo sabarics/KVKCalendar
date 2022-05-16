@@ -22,7 +22,7 @@ final class CurrentLineView: UIView {
         label.textAlignment = .center
         label.adjustsFontSizeToFitWidth = true
         label.minimumScaleFactor = 0.6
-        label.valueHash = Date().minute.hashValue
+        label.hashTime = Date().minute
         return label
     }()
     
@@ -44,14 +44,14 @@ final class CurrentLineView: UIView {
                 isHidden = false
             }
             timeLabel.text = formatter.string(from: date)
-            timeLabel.valueHash = date.minute.hashValue
+            timeLabel.hashTime = date.minute
         }
     }
     
     init(parameters: Parameters, frame: CGRect) {
         self.parameters = parameters
         super.init(frame: frame)
-        
+        isUserInteractionEnabled = false
         setUI()
     }
     
@@ -63,10 +63,15 @@ final class CurrentLineView: UIView {
 extension CurrentLineView: CalendarSettingProtocol {
     
     var style: Style {
-        parameters.style
+        get {
+            parameters.style
+        }
+        set {
+            parameters.style = newValue
+        }
     }
     
-    func setUI() {
+    func setUI(reload: Bool = false) {
         subviews.forEach({ $0.removeFromSuperview() })
         
         lineView.backgroundColor = style.timeline.currentLineHourColor
@@ -92,9 +97,9 @@ extension CurrentLineView: CalendarSettingProtocol {
         isHidden = true
     }
     
-    func updateStyle(_ style: Style) {
-        parameters.style = style
-        setUI()
+    func updateStyle(_ style: Style, force: Bool) {
+        self.style = style
+        setUI(reload: force)
         date = Date()
     }
     

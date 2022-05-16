@@ -1,13 +1,15 @@
 //
-//  ScrollDayHeaderReusableView.swift
+//  ScrollableWeekHeaderView.swift
 //  KVKCalendar
 //
 //  Created by Sergei Kviatkovskii on 3/27/22.
 //
 
+#if os(iOS)
+
 import UIKit
 
-final class ScrollDayHeaderReusableView: UIView {
+final class ScrollableWeekHeaderView: UIView {
         
     var style: Style? {
         didSet {
@@ -59,3 +61,5 @@ final class ScrollDayHeaderReusableView: UIView {
     }
     
 }
+
+#endif

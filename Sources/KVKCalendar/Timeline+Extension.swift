@@ -57,7 +57,7 @@ extension TimelineView: UIScrollViewDelegate {
             
             stack.top.subviews.filter { ($0 as? StubEventView)?.valueHash == eventView.event.hash }.forEach { $0.removeFromSuperview() }
             stack.bottom.subviews.filter { ($0 as? StubEventView)?.valueHash == eventView.event.hash }.forEach { $0.removeFromSuperview() }
-
+            
             // TODO: need fix
             // some recurring events are not displayed in top stack
             guard !visibleView(eventView.frame) else { return }
@@ -142,6 +142,14 @@ extension TimelineView {
 }
 
 extension TimelineView {
+    
+    // to avoid auto scrolling to current time
+    private func doNotScrollToCurrentTimeAndRunAction(_ action: @escaping () -> Void) {
+        forceDisableScrollToCurrentTime = true
+        action()
+        forceDisableScrollToCurrentTime = false
+    }
+    
     private func removeEventResizeView() {
         if let value = eventResizePreview?.haveNewSize, value.needSave, let event = eventResizePreview?.event {
             var startTime: (hour: Int?, minute: Int?)
@@ -162,7 +170,7 @@ extension TimelineView {
             if let startHour = startTime.hour,
                let endHour = endTime.hour,
                let startMinute = startTime.minute,
-                let endMinute = endTime.minute
+               let endMinute = endTime.minute
             {
                 delegate?.didResizeEvent(event,
                                          startTime: ResizeTime(startHour, startMinute),
@@ -170,7 +178,6 @@ extension TimelineView {
             }
         }
         
-        eventResizePreview?.frame = .zero
         eventResizePreview?.removeFromSuperview()
         eventResizePreview = nil
         isResizableEventEnable = false
@@ -179,14 +186,14 @@ extension TimelineView {
     
     private func enableAllEvents(enable: Bool) {
         if style.allDay.isPinned {
-            subviews.filter({ $0.tag == tagAllDayEventView }).forEach({ $0.isUserInteractionEnabled = enable })
+            subviews.filter { $0.tag == tagAllDayEventView }.forEach { $0.isUserInteractionEnabled = enable }
         } else {
-            scrollView.subviews.filter({ $0.tag == tagAllDayEventView }).forEach({ $0.isUserInteractionEnabled = enable })
+            scrollView.subviews.filter { $0.tag == tagAllDayEventView }.forEach { $0.isUserInteractionEnabled = enable }
         }
         
-        scrollView.subviews.filter({ $0 is EventViewGeneral }).forEach({ $0.isUserInteractionEnabled = enable })
+        scrollView.subviews.filter { $0 is EventViewGeneral }.forEach{ $0.isUserInteractionEnabled = enable }
     }
-        
+    
     @objc func pinchZooming(gesture: UIPinchGestureRecognizer) {
         switch gesture.state {
         case .ended, .failed, .cancelled:
@@ -209,7 +216,7 @@ extension TimelineView {
                 return
             }
         }
-                
+        
         let yPoint = gesture.location(in: scrollView).y
         if let label = potentiallyCenteredLabel, let updatedLabel = timeLabels.first(where: { $0.tag >= label.tag }) {
             potentiallyCenteredLabel = updatedLabel
@@ -217,10 +224,9 @@ extension TimelineView {
             potentiallyCenteredLabel = label
         }
         
-        // to avoid auto scrolling to current time
-        forceDisableScrollToCurrentTime = true
-        reloadTimeline()
-        forceDisableScrollToCurrentTime = false
+        doNotScrollToCurrentTimeAndRunAction { [weak self] in
+            self?.reloadTimeline()
+        }
         
         let yPointGlobal = gesture.location(in: self).y
         if let y = potentiallyCenteredLabel?.frame.origin.y, gesture.state == .changed {
@@ -272,7 +278,7 @@ extension TimelineView {
             allDayHeight *= 2
         } else if maxEvents > 4 {
             allDayHeight = style.allDay.maxHeight
-        } else if maxEvents == 2 && UIDevice.current.userInterfaceIdiom == .phone && paramaters.type == .week {
+        } else if maxEvents == 2 && Platform.currentInterface == .phone && paramaters.type == .week {
             allDayHeight *= 2
         }
         let yPoint: CGFloat
@@ -282,23 +288,24 @@ extension TimelineView {
             yPoint = -allDayHeight
         }
         
-        let newAllDayView = AllDayView(parameters: .init(prepareEvents: events,
-                                                         type: paramaters.type,
-                                                         style: style,
-                                                         delegate: delegate),
-                                       frame: CGRect(x: 0, y: yPoint, width: bounds.width, height: allDayHeight))
-        newAllDayView.tag = tagAllDayEventView
+        let allDayView = AllDayView(parameters: .init(prepareEvents: events,
+                                                      type: paramaters.type,
+                                                      style: style,
+                                                      delegate: delegate),
+                                    frame: CGRect(x: 0, y: yPoint, width: bounds.width, height: allDayHeight),
+                                    dataSource: dataSource)
+        allDayView.tag = tagAllDayEventView
         if style.allDay.isPinned {
-            addSubview(newAllDayView)
+            addSubview(allDayView)
         } else {
-            scrollView.addSubview(newAllDayView)
+            scrollView.addSubview(allDayView)
         }
         
-        return newAllDayView
+        return allDayView
     }
     
     func getTimelineLabel(hour: Int) -> TimelineLabel? {
-        timeLabels.first(where: { $0.valueHash == hour.hashValue })
+        timeLabels.first(where: { $0.hashTime == hour })
     }
     
     func createTimesLabel(start: Int) -> [TimelineLabel] {
@@ -315,7 +322,7 @@ extension TimelineView {
             time.textColor = style.timeline.timeColor
             time.text = hour
             let hourTmp = TimeHourSystem.twentyFour.hours[idx]
-            time.valueHash = timeLabelFormatter.date(from: hourTmp)?.hour.hashValue
+            time.hashTime = timeLabelFormatter.date(from: hourTmp)?.hour ?? 0
             time.tag = idx - start
             times.append(time)
         }
@@ -355,17 +362,17 @@ extension TimelineView {
             return acc + lines
         }
     }
-
+    
     func createVerticalLine(pointX: CGFloat, date: Date?) -> VerticalLineLayer {
         let frame = CGRect(x: pointX, y: 0, width: style.timeline.widthLine, height: scrollView.contentSize.height)
-
+        
         let line = VerticalLineLayer(date: date,
-                             frame: frame,
-                             tag: tagVerticalLine,
-                             start: CGPoint(x: pointX, y: 0),
-                             end: CGPoint(x: pointX, y: scrollView.contentSize.height),
-                             color: style.timeline.separatorLineColor,
-                             width: style.timeline.widthLine)
+                                     frame: frame,
+                                     tag: tagVerticalLine,
+                                     start: CGPoint(x: pointX, y: 0),
+                                     end: CGPoint(x: pointX, y: scrollView.contentSize.height),
+                                     color: style.timeline.separatorLineColor,
+                                     width: style.timeline.widthLine)
         line.isHidden = !style.week.showVerticalDayDivider
         return line
     }
@@ -390,21 +397,23 @@ extension TimelineView {
         let time = calculateChangingTime(pointY: point.y)
         var newEvent = Event(ID: Event.idForNewEvent)
         newEvent.title = TextEvent(timeline: style.event.textForNewEvent)
-        let newEventPreview = getEventView(style: style, event: newEvent, frame: CGRect(origin: point, size: eventPreviewSize))
+        let newEventPreview = getEventView(style: style,
+                                           event: newEvent,
+                                           frame: CGRect(origin: point, size: eventPreviewSize))
         newEventPreview.stateEvent = .move
         newEventPreview.delegate = self
         newEventPreview.editEvent(gesture: gesture)
         
         switch gesture.state {
         case .began:
-            UIImpactFeedbackGenerator().impactOccurred()
+            UIImpactFeedbackGenerator(style: .light).impactOccurred()
         case .ended, .failed, .cancelled:
-            UIImpactFeedbackGenerator().impactOccurred()
+            UIImpactFeedbackGenerator(style: .light).impactOccurred()
             guard let minute = time.minute, let hour = time.hour else { return }
             
             switch paramaters.type {
             case .day:
-                newEvent.start = selectedDate ?? Date()
+                newEvent.start = selectedDate
             case .week:
                 newEvent.start = shadowView.date ?? Date()
             default:
@@ -450,8 +459,7 @@ extension TimelineView {
     func identityViews(duration: TimeInterval = 0.3,
                        delay: TimeInterval = 0.1,
                        _ views: [UIView],
-                       action: @escaping (() -> Void) = {})
-    {
+                       action: @escaping (() -> Void) = {}) {
         UIView.animate(withDuration: duration,
                        delay: delay,
                        usingSpringWithDamping: 0.8,
@@ -489,7 +497,6 @@ extension TimelineView: ResizeEventViewDelegate {
             eventResizePreview?.frame.size.height = location.y - (eventResizePreview?.frame.origin.y ?? 0)
             eventResizePreview?.endTime = movingMinuteLabel.time
         }
-        
         eventResizePreview?.updateHeight()
     }
     
@@ -560,6 +567,7 @@ extension TimelineView: EventDelegate {
             scrollView.addSubview(resizeView)
         }
         enableAllEvents(enable: false)
+        UIImpactFeedbackGenerator(style: .light).impactOccurred()
     }
     
     func didEndResizeEvent(_ event: Event, gesture: UILongPressGestureRecognizer) {
@@ -576,7 +584,7 @@ extension TimelineView: EventDelegate {
             shadowView.date = value.date
             scrollView.addSubview(shadowView)
         }
-    
+        
         eventPreview?.removeFromSuperview()
         eventPreview = nil
         
@@ -607,6 +615,8 @@ extension TimelineView: EventDelegate {
                 self.eventPreview?.transform = CGAffineTransform(scaleX: 1, y: 1)
             }
         }
+        
+        UIImpactFeedbackGenerator(style: .light).impactOccurred()
     }
     
     func didEndMovingEvent(_ event: Event, gesture: UILongPressGestureRecognizer) {
@@ -635,6 +645,7 @@ extension TimelineView: EventDelegate {
         }
         
         shadowView.removeFromSuperview()
+        UIImpactFeedbackGenerator(style: .light).impactOccurred()
     }
     
     func didChangeMovingEvent(_ event: Event, gesture: UILongPressGestureRecognizer) {
@@ -671,25 +682,21 @@ extension TimelineView: EventDelegate {
             pointTempY -= eventPreviewYOffset
         }
         let time = calculateChangingTime(pointY: pointTempY)
-        movingMinuteLabel.time = TimeContainer(minute: 0, hour: time.hour ?? 0)
         
         if let minute = time.minute, 0...59 ~= minute {
             movingMinuteLabel.frame = CGRect(x: style.timeline.offsetTimeX, y: (pointY - offset) - style.timeline.heightTime,
                                              width: style.timeline.widthTime, height: style.timeline.heightTime)
             scrollView.addSubview(movingMinuteLabel)
-            let roundedMinute = minute.roundToNearest(style.timeline.movingMinuteLabelRoundUpTime)
-            
-            movingMinuteLabel.text = ":\(roundedMinute)"
-            movingMinuteLabel.time?.minute = roundedMinute
+            let roundedMinute = minute.roundToNearest(style.timeline.minuteLabelRoundUpTime)
+            movingMinuteLabel.time = TimeContainer(minute: roundedMinute, hour: time.hour ?? 0)
         } else {
-            movingMinuteLabel.text = ":0"
-            movingMinuteLabel.time?.minute = 0
+            movingMinuteLabel.time.minute = 0
         }
     }
     
     func calculateChangingTime(pointY: CGFloat) -> (hour: Int?, minute: Int?) {
         guard let time = timeLabels.first(where: { $0.frame.origin.y >= pointY }) else { return (nil, nil) }
-
+        
         let firstY = time.frame.origin.y - (calculatedTimeY + style.timeline.heightTime)
         let percent = (pointY - firstY) / (calculatedTimeY + style.timeline.heightTime)
         let newMinute = Int(60.0 * percent)
@@ -714,10 +721,15 @@ extension TimelineView: EventDelegate {
 extension TimelineView: CalendarSettingProtocol {
     
     var style: Style {
-        paramaters.style
+        get {
+            paramaters.style
+        }
+        set {
+            paramaters.style = newValue
+        }
     }
     
-    func setUI() {
+    func setUI(reload: Bool = false) {
         scrollView.backgroundColor = style.timeline.backgroundColor
         scrollView.isScrollEnabled = style.timeline.scrollDirections.contains(.vertical)
         gestureRecognizers?.forEach({ $0.removeTarget(self, action: #selector(addNewEvent)) })
@@ -736,10 +748,24 @@ extension TimelineView: CalendarSettingProtocol {
         currentLineView.reloadFrame(frame)
     }
     
-    func updateStyle(_ style: Style) {
-        paramaters.style = style
-        currentLineView.updateStyle(style)
-        setUI()
+    func updateStyle(_ style: Style, force: Bool) {
+        self.style = style
+        currentLineView.updateStyle(style, force: force)
+        setUI(reload: force)
+    }
+    
+    func removeConstraints() {
+        NSLayoutConstraint.deactivate(scrollView.constraints)
+    }
+    
+    func setupConstraints() {
+        scrollView.translatesAutoresizingMaskIntoConstraints = false
+        
+        let top = scrollView.topAnchor.constraint(equalTo: topAnchor)
+        let left = scrollView.leftAnchor.constraint(equalTo: leftAnchor)
+        let right = scrollView.rightAnchor.constraint(equalTo: rightAnchor)
+        let bottom = scrollView.bottomAnchor.constraint(equalTo: bottomAnchor)
+        NSLayoutConstraint.activate([top, left, right, bottom])
     }
 }
 
@@ -754,7 +780,7 @@ extension TimelineView: AllDayEventDelegate {
 extension Int {
     /// SwifterSwift: Rounds to the closest multiple of n.
     func roundToNearest(_ number: Int) -> Int {
-        return number == 0 ? self : Int(round(Double(self) / Double(number))) * number
+        number == 0 ? self : Int(round(Double(self) / Double(number))) * number
     }
 }
 
