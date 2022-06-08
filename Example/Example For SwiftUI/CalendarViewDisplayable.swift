@@ -55,6 +55,18 @@ struct CalendarDisplayView: UIViewRepresentable, KVKCalendarSettings {
     
     // MARK: Calendar DataSource and Delegate
     class Coordinator: NSObject, CalendarDataSource, CalendarDelegate {
+        func dequeueHeader<T>(date: Date?, isShowHeader: Bool, type: CalendarType, view: T, indexPath: IndexPath, events: [Event]) -> KVKCalendarHeaderProtocol? where T : UIScrollView {
+            return nil
+        }
+        
+        func dequeueCell<T>(dateParameter: DateParameter, type: CalendarType, view: T, indexPath: IndexPath, event: Event?) -> KVKCalendarCellProtocol? where T : UIScrollView {
+            return nil
+        }
+        
+        func willDisplaySections(_ event: Event, type: CalendarType, tableView: UITableView, list: [SectionListView], indexPath: IndexPath, scrollDirection: EventScrollDirection) {
+            
+        }
+        
         private var view: CalendarDisplayView
         
         var events: [Event] = [] {

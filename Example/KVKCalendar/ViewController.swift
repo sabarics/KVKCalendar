@@ -122,6 +122,10 @@ final class ViewController: UIViewController, KVKCalendarSettings, UIPopoverPres
 // MARK: - Calendar delegate
 
 extension ViewController: CalendarDelegate {
+    func willDisplaySections(_ event: Event, type: CalendarType, tableView: UITableView, list: [SectionListView], indexPath: IndexPath, scrollDirection: EventScrollDirection) {
+        
+    }
+    
     func didChangeEvent(_ event: Event, start: Date?, end: Date?) {
         if let result = handleChangingEvent(event, start: start, end: end) {
             events.replaceSubrange(result.range, with: result.events)
@@ -162,9 +166,19 @@ extension ViewController: CalendarDelegate {
     }
 }
 
+
 // MARK: - Calendar datasource
 
 extension ViewController: CalendarDataSource {
+    func dequeueHeader<T>(date: Date?, isShowHeader: Bool, type: CalendarType, view: T, indexPath: IndexPath, events: [Event]) -> KVKCalendarHeaderProtocol? where T : UIScrollView {
+        return nil
+    }
+    
+    func dequeueCell<T>(dateParameter: DateParameter, type: CalendarType, view: T, indexPath: IndexPath, event: Event?) -> KVKCalendarCellProtocol? where T : UIScrollView {
+        
+        handleCell(dateParameter: dateParameter, type: type, view: view, indexPath: indexPath)
+    }
+    
     
     func dequeueAllDayViewEvent(_ event: Event, date: Date, frame: CGRect) -> UIView? {
         if date.kvkDay == 11 {

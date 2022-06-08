@@ -189,35 +189,34 @@ extension DayView: CalendarSettingProtocol {
         } else {
             timelineFrame.size.height = frame.height
         }
-        
-        if isAvailableEventViewer {
-            if let defaultWidth = style.timeline.widthEventViewer {
-                timelineFrame.size.width = frame.width - defaultWidth
-                
-                if let idx = subviews.firstIndex(where: { $0.tag == tagEventViewer }) {
-                    subviews[idx].removeFromSuperview()
-                    var viewerFrame = timelineFrame
-                    
-                    let width: CGFloat
-                    if UIDevice.current.orientation.isPortrait {
-                        width = frame.width * 0.5
-                        timelineFrame.size.width = frame.width - width
-                    } else {
-                        width = defaultWidth
-                    }
-                    
-                    viewerFrame.size.width = width
-                    if let resultViewerFrame = updateEventViewer(frame: viewerFrame) {
-                        // notify when we did change the frame of viewer
-                        delegate?.didChangeViewerFrame(resultViewerFrame)
-                    }
-                }
-            } else {
-                timelineFrame.size.width = frame.width
-            }
-        } else {
-            timelineFrame.size.width = frame.width
-        }
+        //        if isAvailableEventViewer {
+        //            if let defaultWidth = style.timeline.widthEventViewer {
+        //                timelineFrame.size.width = frame.width - defaultWidth
+        //
+        //                if let idx = subviews.firstIndex(where: { $0.tag == tagEventViewer }) {
+        //                    subviews[idx].removeFromSuperview()
+        //                    var viewerFrame = timelineFrame
+        //
+        //                    let width: CGFloat
+        //                    if UIDevice.current.orientation.isPortrait {
+        //                        width = frame.width * 0.5
+        //                        timelineFrame.size.width = frame.width - width
+        //                    } else {
+        //                        width = defaultWidth
+        //                    }
+        //
+        //                    viewerFrame.size.width = width
+        //                    if let resultViewerFrame = updateEventViewer(frame: viewerFrame) {
+        //                        // notify when we did change the frame of viewer
+        //                        delegate?.didChangeViewerFrame(resultViewerFrame)
+        //                    }
+        //                }
+        //            } else {
+        //                timelineFrame.size.width = frame.width
+        //            }
+        //        } else {
+        //            timelineFrame.size.width = frame.width
+        //        }
         
         timelinePage.frame = timelineFrame
         timelinePage.timelineView?.reloadFrame(CGRect(origin: .zero, size: timelineFrame.size))

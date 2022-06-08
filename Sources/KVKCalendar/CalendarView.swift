@@ -43,7 +43,7 @@ public final class CalendarView: UIView {
     private(set) var weekView: WeekView
     private(set) var monthView: MonthView
     private(set) var yearView: YearView
-    private(set) var listView: ListView
+    public var listView: ListView
     
     public init(frame: CGRect, date: Date? = nil, style: Style = Style(), years: Int = 4) {
         let adaptiveStyle = style.adaptiveStyle

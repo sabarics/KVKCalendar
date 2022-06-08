@@ -34,8 +34,8 @@ public final class ListView: UIView, CalendarSettingProtocol {
     }
     
     private var params: Parameters
-    
-    private lazy var tableView: UITableView = {
+    var lastVelocityYSign = 0
+    public lazy var tableView: UITableView = {
         let table = UITableView()
         table.tableFooterView = UIView()
         table.dataSource = self
@@ -91,6 +91,11 @@ public final class ListView: UIView, CalendarSettingProtocol {
         tableView.reloadData()
     }
     
+    func reloadSectionData(_ events: [Event],indexpath:IndexPath) {
+        params.data.reloadEvents(events)
+        tableView.reloadSections(IndexSet(integer: indexpath.section), with: .none)
+    }
+    
     func showSkeletonVisible(_ visible: Bool) {
         params.data.isSkeletonVisible = visible
         tableView.reloadData()
@@ -102,11 +107,17 @@ public final class ListView: UIView, CalendarSettingProtocol {
         guard !params.data.isSkeletonVisible else { return }
         
         if let idx = params.data.sections.firstIndex(where: { $0.date.isEqual(date) }) {
-            tableView.scrollToRow(at: IndexPath(row: 0, section: idx), at: .top, animated: animated)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                self.tableView.scrollToRow(at: IndexPath(row: 0, section: idx), at: .top, animated: animated)
+            }
         } else if let idx = params.data.sections.firstIndex(where: { $0.date.kvkYear == date.kvkYear && $0.date.kvkMonth == date.kvkMonth }) {
-            tableView.scrollToRow(at: IndexPath(row: 0, section: idx), at: .top, animated: animated)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                self.tableView.scrollToRow(at: IndexPath(row: 0, section: idx), at: .top, animated: animated)
+            }
         } else if let idx = params.data.sections.firstIndex(where: { $0.date.kvkYear == date.kvkYear }) {
-            tableView.scrollToRow(at: IndexPath(row: 0, section: idx), at: .top, animated: animated)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                self.tableView.scrollToRow(at: IndexPath(row: 0, section: idx), at: .top, animated: animated)
+            }
         }
     }
     
@@ -130,7 +141,7 @@ extension ListView: UITableViewDataSource, UITableViewDelegate {
         }
         
         let event = params.data.event(indexPath: indexPath)
-        if let cell = dataSource?.dequeueCell(parameter: .init(date: event.start, events: [event]), type: .list, view: tableView, indexPath: indexPath) as? UITableViewCell {
+        if let cell = dataSource?.dequeueCell(parameter: .init(date: event.start), type: .list, view: tableView, indexPath: indexPath,event:event) as? UITableViewCell {
             return cell
         } else {
             return tableView.kvkDequeueCell(indexPath: indexPath) { (cell: ListViewCell) in
@@ -148,7 +159,8 @@ extension ListView: UITableViewDataSource, UITableViewDelegate {
         }
         
         let date = params.data.sections[section].date
-        if let headerView = dataSource?.dequeueHeader(date: date, type: .list, view: tableView, indexPath: IndexPath(row: 0, section: section)) as? UIView {
+        let isShowHeader = params.data.sections[section].isShowHeader
+        if let headerView = dataSource?.dequeueHeader(date: date,isShowHeader:isShowHeader, type: .list, view: tableView, indexPath: IndexPath(row: 0, section: section),events:params.data.sections[section].events) as? UIView {
             return headerView
         } else {
             return tableView.kvkDequeueView { (view: ListViewHeader) in
@@ -170,7 +182,7 @@ extension ListView: UITableViewDataSource, UITableViewDelegate {
         let event = params.data.event(indexPath: indexPath)
         if let height = delegate?.sizeForCell(event.start, type: .list)?.height {
             return height
-        } else {
+        } else{
             return UITableView.automaticDimension
         }
     }
@@ -197,6 +209,30 @@ extension ListView: UITableViewDataSource, UITableViewDelegate {
         let frameCell = tableView.cellForRow(at: indexPath)?.frame
         delegate?.didSelectEvent(event, type: .list, frame: frameCell)
     }
+    
+    public func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        let event = params.data.event(indexPath: indexPath)
+        var direction: EventScrollDirection = .netural
+        if lastVelocityYSign < 0{
+            direction = .down
+            lastVelocityYSign = 0
+        }
+        else if lastVelocityYSign > 0{
+            direction = .up
+            lastVelocityYSign = 0
+        }
+        delegate?.willDisplaySections(event, type: .list, tableView: tableView, list: params.data.sections, indexPath: indexPath,scrollDirection: direction)
+    }
+    
+    public func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        let currentVelocityY =  scrollView.panGestureRecognizer.velocity(in: scrollView.superview).y
+        let currentVelocityYSign = Int(currentVelocityY).signum()
+        if currentVelocityYSign != lastVelocityYSign &&
+            currentVelocityYSign != 0 {
+            lastVelocityYSign = currentVelocityYSign
+        }
+    }
+    
     
 }
 

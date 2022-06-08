@@ -71,6 +71,51 @@ extension CalendarView {
         }
     }
     
+    public func reloadSectionData(indexPath:IndexPath) {
+        
+        func reload(systemEvents: [EKEvent] = []) {
+            let events = dataSource?.eventsForCalendar(systemEvents: systemEvents) ?? []
+            
+            switch parameters.type {
+            case .day:
+                dayView.reloadData(events)
+            case .week:
+                weekView.reloadData(events)
+            case .month:
+                monthView.reloadData(events)
+            case .list:
+                listView.reloadSectionData(events, indexpath: indexPath)
+            default:
+                break
+            }
+        }
+        
+        if !style.systemCalendars.isEmpty {
+            requestAccessSystemCalendars(style.systemCalendars, store: eventStore) { [weak self] (result) in
+                guard let self = self else {
+                    DispatchQueue.main.async {
+                        reload()
+                    }
+                    return
+                }
+                
+                if result {
+                    self.getSystemEvents(store: self.eventStore, calendars: self.style.systemCalendars) { (systemEvents) in
+                        DispatchQueue.main.async {
+                            reload(systemEvents: systemEvents)
+                        }
+                    }
+                } else {
+                    DispatchQueue.main.async {
+                        reload()
+                    }
+                }
+            }
+        } else {
+            reload()
+        }
+    }
+    
     public func scrollTo(_ date: Date, animated: Bool = true) {
         switch parameters.type {
         case .day:
@@ -225,12 +270,17 @@ extension CalendarView {
 }
 
 extension CalendarView: DisplayDataSource {
-    public func dequeueCell<T>(parameter: CellParameter, type: CalendarType, view: T, indexPath: IndexPath) -> KVKCalendarCellProtocol? where T : UIScrollView {
-        dataSource?.dequeueCell(parameter: parameter, type: type, view: view, indexPath: indexPath)
+    
+    public func dequeueCell<T>(parameter: CellParameter, type: CalendarType, view: T, indexPath: IndexPath, event: Event?) -> KVKCalendarCellProtocol? where T : UIScrollView {
+        dataSource?.dequeueCell(parameter: parameter, type: type, view: view, indexPath: indexPath, event: event)
     }
     
-    public func dequeueHeader<T>(date: Date?, type: CalendarType, view: T, indexPath: IndexPath) -> KVKCalendarHeaderProtocol? where T : UIScrollView {
-        dataSource?.dequeueHeader(date: date, type: type, view: view, indexPath: indexPath)
+    public func dequeueHeader<T>(date: Date?, isShowHeader: Bool, type: CalendarType, view: T, indexPath: IndexPath,events:[Event]) -> KVKCalendarHeaderProtocol? where T : UIScrollView {
+        dataSource?.dequeueHeader(date: date, isShowHeader: isShowHeader, type: type, view: view, indexPath: indexPath,events:events)
+    }
+    
+    public func dequeueCell<T>(parameter: CellParameter, type: CalendarType, view: T, indexPath: IndexPath) -> KVKCalendarCellProtocol? where T : UIScrollView {
+        dataSource?.dequeueCell(parameter: parameter, type: type, view: view, indexPath: indexPath)
     }
     
     public func willDisplayCollectionView(frame: CGRect, type: CalendarType) -> UICollectionView? {
@@ -240,7 +290,7 @@ extension CalendarView: DisplayDataSource {
     public func willDisplayEventView(_ event: Event, frame: CGRect, date: Date?) -> EventViewGeneral? {
         dataSource?.willDisplayEventView(event, frame: frame, date: date)
     }
-
+    
     public func willDisplayHeaderSubview(date: Date?, frame: CGRect, type: CalendarType) -> UIView? {
         dataSource?.willDisplayHeaderSubview(date: date, frame: frame, type: type)
     }
@@ -266,10 +316,14 @@ extension CalendarView: DisplayDataSource {
     public func dequeueAllDayViewEvent(_ event: Event, date: Date, frame: CGRect) -> UIView? {
         dataSource?.dequeueAllDayViewEvent(event, date: date, frame: frame)
     }
-
+    
 }
 
 extension CalendarView: DisplayDelegate {
+    public func willDisplaySections(_ event: Event, type: CalendarType,tableView: UITableView, list: [SectionListView], indexPath: IndexPath,scrollDirection:EventScrollDirection) {
+        delegate?.willDisplaySections(event, type: type, tableView: tableView, list: list, indexPath: indexPath,scrollDirection: scrollDirection)
+    }
+    
     public func sizeForHeader(_ date: Date?, type: CalendarType) -> CGSize? {
         delegate?.sizeForHeader(date, type: type)
     }

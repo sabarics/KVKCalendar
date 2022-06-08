@@ -88,6 +88,21 @@ final class WeekView: UIView {
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+}
+
+extension WeekView: DisplayDataSource {
+    func dequeueCell<T>(dateParameter: DateParameter, type: CalendarType, view: T, indexPath: IndexPath, event: Event?) -> KVKCalendarCellProtocol? where T : UIScrollView {
+        dataSource?.dequeueCell(dateParameter: dateParameter, type: type, view: view, indexPath: indexPath, event: event)
+    }
+    
+    func dequeueHeader<T>(date: Date?, isShowHeader: Bool, type: CalendarType, view: T, indexPath: IndexPath,events:[Event]) -> KVKCalendarHeaderProtocol? where T : UIScrollView {
+        dataSource?.dequeueHeader(date: date, isShowHeader: isShowHeader, type: type, view: view, indexPath: indexPath,events:events)
+    }
+    
+    
+    func willDisplayEventView(_ event: Event, frame: CGRect, date: Date?) -> EventViewGeneral? {
+        dataSource?.willDisplayEventView(event, frame: frame, date: date)
+    }
     
     func reloadDays(data: CalendarData, style: Style) {
         parameters.data.reloadData(data, startDay: style.startWeekDay, maxDays: style.week.maxDays)

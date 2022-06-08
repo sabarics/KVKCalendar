@@ -21,6 +21,11 @@ public struct CellParameter {
     public var type: DayType? = .empty
     public var events: [Event] = []
 }
+public enum EventScrollDirection:String{
+    case up
+    case down
+    case netural
+}
 
 public enum TimeHourSystem: Int {
     @available(swift, deprecated: 0.3.6, obsoleted: 0.3.7, renamed: "twelve")
@@ -357,10 +362,10 @@ public protocol CalendarDataSource: AnyObject {
     func dequeueListCell(date: Date?, tableView: UITableView, indexPath: IndexPath) -> UITableViewCell?
     
     /// Use this method to add a custom day cell
-    func dequeueCell<T: UIScrollView>(parameter: CellParameter, type: CalendarType, view: T, indexPath: IndexPath) -> KVKCalendarCellProtocol?
+    func dequeueCell<T: UIScrollView>(parameter: CellParameter, type: CalendarType, view: T, indexPath: IndexPath,event:Event?) -> KVKCalendarCellProtocol?
     
     /// Use this method to add a header view
-    func dequeueHeader<T: UIScrollView>(date: Date?, type: CalendarType, view: T, indexPath: IndexPath) -> KVKCalendarHeaderProtocol?
+    func dequeueHeader<T: UIScrollView>(date: Date?,isShowHeader:Bool, type: CalendarType, view: T, indexPath: IndexPath,events:[Event]) -> KVKCalendarHeaderProtocol?
     
     @available(iOS 14.0, *)
     func willDisplayEventOptionMenu(_ event: Event, type: CalendarType) -> (menu: UIMenu, customButton: UIButton?)?
@@ -454,6 +459,9 @@ public protocol CalendarDelegate: AnyObject {
     
     /// deselect event on timeline
     func didDeselectEvent(_ event: Event, animated: Bool)
+    
+    /// get a willDisplay event
+    func willDisplaySections(_ event: Event, type: CalendarType, tableView: UITableView,list:[SectionListView], indexPath:IndexPath,scrollDirection:EventScrollDirection)
 }
 
 public extension CalendarDelegate {

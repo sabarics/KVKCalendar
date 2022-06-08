@@ -9,17 +9,18 @@
 
 import Foundation
 
-public final class ListViewData {
+public struct SectionListView {
     
-    public struct SectionListView {
-        let date: Date
-        var events: [Event]
-        
-        public init(date: Date, events: [Event]) {
-            self.date = date
-            self.events = events
-        }
+    public let date: Date
+    public var events: [Event]
+    public var isShowHeader:Bool = false
+    public init(date: Date, events: [Event]) {
+        self.date = date
+        self.events = events
     }
+}
+
+public final class ListViewData {
     
     var sections: [SectionListView]
     var date: Date
@@ -42,6 +43,7 @@ public final class ListViewData {
     }
     
     func reloadEvents(_ events: [Event]) {
+        print("------------------Strat Time - \(Date())-------------------------")
         sections = events.reduce([], { (acc, event) -> [SectionListView] in
             var accTemp = acc
             
@@ -55,6 +57,21 @@ public final class ListViewData {
             accTemp[idx].events = accTemp[idx].events.sorted(by: { $0.start < $1.start })
             return accTemp
         })
+        
+        var tempSectionList : [SectionListView] = []
+        for (index,obj) in sections.enumerated(){
+            guard let idx = tempSectionList.firstIndex(where: { $0.date.year == obj.date.year && $0.date.month == obj.date.month }) else {
+                tempSectionList.append(sections[index])
+                continue
+            }
+        }
+        for (_,obj) in tempSectionList.enumerated(){
+            let firstIndex = sections.firstIndex{$0.date == obj.date}
+            if let firstIndex = firstIndex{
+                sections[firstIndex].isShowHeader = true
+            }
+        }
+        print("------------------End Time - \(Date())-------------------------")
     }
     
     func event(indexPath: IndexPath) -> Event {
