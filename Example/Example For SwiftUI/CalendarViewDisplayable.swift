@@ -59,7 +59,7 @@ struct CalendarDisplayView: UIViewRepresentable, KVKCalendarSettings {
             return nil
         }
         
-        func dequeueCell<T>(dateParameter: DateParameter, type: CalendarType, view: T, indexPath: IndexPath, event: Event?) -> KVKCalendarCellProtocol? where T : UIScrollView {
+        func dequeueCell<T>(parameter: CellParameter, type: CalendarType, view: T, indexPath: IndexPath, event: Event?) -> KVKCalendarCellProtocol? where T : UIScrollView {
             return nil
         }
         

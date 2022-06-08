@@ -60,7 +60,7 @@ public final class ListViewData {
         
         var tempSectionList : [SectionListView] = []
         for (index,obj) in sections.enumerated(){
-            guard let idx = tempSectionList.firstIndex(where: { $0.date.year == obj.date.year && $0.date.month == obj.date.month }) else {
+            guard let idx = tempSectionList.firstIndex(where: { $0.date.kvkYear == obj.date.kvkYear && $0.date.kvkMonth == obj.date.kvkMonth }) else {
                 tempSectionList.append(sections[index])
                 continue
             }

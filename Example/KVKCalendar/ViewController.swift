@@ -174,9 +174,9 @@ extension ViewController: CalendarDataSource {
         return nil
     }
     
-    func dequeueCell<T>(dateParameter: DateParameter, type: CalendarType, view: T, indexPath: IndexPath, event: Event?) -> KVKCalendarCellProtocol? where T : UIScrollView {
+    func dequeueCell<T>(parameter: CellParameter, type: CalendarType, view: T, indexPath: IndexPath, event: Event?) -> KVKCalendarCellProtocol? where T : UIScrollView {
         
-        handleCell(dateParameter: dateParameter, type: type, view: view, indexPath: indexPath)
+        handleCell(parameter: parameter, type: type, view: view, indexPath: indexPath)
     }
     
     
