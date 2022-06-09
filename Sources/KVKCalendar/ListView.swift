@@ -231,6 +231,9 @@ extension ListView: UITableViewDataSource, UITableViewDelegate {
             currentVelocityYSign != 0 {
             lastVelocityYSign = currentVelocityYSign
         }
+        if currentVelocityYSign == 1 && params.data.sections.count < 2{
+            delegate?.willDisplaySections(params.data.sections[0].events[0], type: .list, tableView: tableView, list: params.data.sections, indexPath: IndexPath(row: 0, section: 0),scrollDirection: .up)
+        }
     }
     
     
