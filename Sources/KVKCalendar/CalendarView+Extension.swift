@@ -249,6 +249,7 @@ extension CalendarView {
             setupConstraintsForView(yearView)
         case .list:
             addSubview(listView)
+            listView.setupConstraints()
             setupConstraintsForView(listView)
             reloadData()
         }        
@@ -317,6 +318,18 @@ extension CalendarView: DisplayDataSource {
         dataSource?.dequeueAllDayViewEvent(event, date: date, frame: frame)
     }
     
+    public func dequeueTimeLabel(hour: Int, frame: CGRect) -> [UILabel] {
+        dataSource?.dequeueTimeLabel(hour: hour, frame: frame) ?? []
+    }
+    
+    public func dequeueAllDayCornerHeader(date: Date, frame: CGRect) -> UIView? {
+        dataSource?.dequeueAllDayCornerHeader(date: date, frame: frame)
+    }
+
+    public func dequeueCornerHeader(date: Date, frame: CGRect) -> UIView? {
+        dataSource?.dequeueCornerHeader(date: date, frame: frame)
+    }
+
 }
 
 extension CalendarView: DisplayDelegate {

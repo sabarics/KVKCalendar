@@ -135,13 +135,6 @@ extension KVKCalendarSettings {
                 cell.imageView.image = UIImage(named: "ic_stub")
             }
             return cell
-        case .list:
-            guard parameter.date?.kvkDay == 14 else { return nil }
-            
-            let cell = (view as? UITableView)?.kvkDequeueCell { (cell) in
-                cell.backgroundColor = .systemRed
-            }
-            return cell
         default:
             return nil
         }
@@ -170,6 +163,7 @@ extension KVKCalendarSettings {
         }
         style.timeline.scrollLineHourMode = .onlyOnInitForDate(defaultDate)
         style.timeline.showLineHourMode = .always
+        style.timeline.offsetAdditionalTimeX = 50
         return style
     }
     
@@ -216,14 +210,14 @@ extension KVKCalendarSettings {
             }
             
             if item.id == "14" {
-                event.recurringType = .everyDay
+                event.recurringType = .everyMonth
                 var customeStyle = style.event
                 customeStyle.defaultHeight = 40
                 event.style = customeStyle
             }
-            if item.id == "40" {
-                event.recurringType = .everyDay
-            }
+//            if item.id == "40" {
+//                event.recurringType = .everyYear
+//            }
             return event
         })
         completion(events)
