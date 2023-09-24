@@ -71,10 +71,6 @@ public struct HeaderScrollStyle {
         }
     }
     private var heightSubviewHeaderCached: CGFloat = 30
-    
-    @available(swift, deprecated: 0.4.1, obsoleted: 0.4.2, renamed: "heightSubviewHeader")
-    public var heightTitleDate: CGFloat = 30
-    
     public var colorBackground: UIColor = gainsboro.withAlphaComponent(0.4)
     public var isHiddenSubview: Bool = false {
         didSet {
@@ -85,19 +81,6 @@ public struct HeaderScrollStyle {
             }
         }
     }
-    
-    @available(swift, deprecated: 0.4.1, obsoleted: 0.4.2, renamed: "isHiddenSubview")
-    public var isHiddenTitleDate: Bool = false
-    
-    @available(swift, deprecated: 0.4.1, obsoleted: 0.4.2, renamed: "isHiddenSubview")
-    public var isHiddenCornerTitleDate: Bool = true
-    
-    @available(swift, deprecated: 0.4.1, obsoleted: 0.4.2, renamed: "titleFormatter")
-    public var formatterTitle: DateFormatter = {
-        let format = DateFormatter()
-        format.dateStyle = .full
-        return format
-    }()
     
     public var titleFormatter: DateFormatter = {
         let format = DateFormatter()
@@ -110,14 +93,8 @@ public struct HeaderScrollStyle {
         return format
     }()
     
-    @available(swift, deprecated: 0.5.9, obsoleted: 0.6.0, renamed: "titleDateColor")
-    public var colorTitleDate: UIColor = .black
     public var titleDateColor: UIColor = .black
-        
-    @available(swift, deprecated: 0.5.9, obsoleted: 0.6.0, renamed: "titleDateColorCorner")
-    public var colorTitleCornerDate: UIColor = .red
     public var titleDateColorCorner: UIColor = .red
-    
     public var colorDate: UIColor = .black
     public var fontDate: UIFont = .systemFont(ofSize: 17)
     public var colorNameDay: UIColor = .black
@@ -186,15 +163,8 @@ public struct TimelineStyle {
     public var timeAlignment: NSTextAlignment = .center
     public var timeFont: UIFont = .systemFont(ofSize: 12)
     public var widthEventViewer: CGFloat? = nil
-    
-    @available(swift, deprecated: 0.4.2, obsoleted: 0.4.3, renamed: "showLineHourMode")
-    public var showCurrentLineHour: Bool = true
     public var showLineHourMode: CurrentLineHourShowMode = .today
-    
-    @available(swift, deprecated: 0.4.2, obsoleted: 0.4.3, renamed: "scrollLineHourMode")
-    public var scrollToCurrentHour: Bool = true
     public var scrollLineHourMode: CurrentLineHourScrollMode = .today
-    
     public var currentLineHourFont: UIFont = .systemFont(ofSize: 12)
     public var currentLineHourColor: UIColor = .red
     public var currentLineHourDotSize: CGSize = CGSize(width: 5, height: 5)
@@ -208,11 +178,7 @@ public struct TimelineStyle {
     public var minimumPressDuration: TimeInterval = 0.5
     public var isHiddenStubEvent: Bool = true
     public var isEnabledCreateNewEvent: Bool = true
-    
-    @available(swift, deprecated: 0.5.1, obsoleted: 0.5.2, renamed: "maxLimitCachedPages")
-    public var maxLimitChachedPages: UInt = 10
     public var maxLimitCachedPages: UInt = 10
-    
     public var scrollDirections: Set<ScrollDirectionType> = Set(ScrollDirectionType.allCases)
     public var dividerType: DividerType? = nil
     public var eventLayout: TimelineEventLayout = DefaultTimelineEventLayout()
@@ -317,13 +283,7 @@ public struct WeekStyle {
 // MARK: Month style
 
 public struct MonthStyle {
-    @available(swift, deprecated: 0.4.1, obsoleted: 0.4.2, renamed: "titleFormatter")
-    public var formatter: DateFormatter = {
-        let format = DateFormatter()
-        format.dateFormat = "MMMM yyyy"
-        return format
-    }()
-    
+
     public var titleFormatter: DateFormatter = {
         let format = DateFormatter()
         format.dateFormat = "MMMM yyyy"
@@ -341,12 +301,8 @@ public struct MonthStyle {
     }()
     public var heightHeaderWeek: CGFloat = 25
     
-    @available(swift, deprecated: 0.5.5, obsoleted: 0.5.6, renamed: "heightTitleHeader")
-    public var heightTitleDate: CGFloat = 40
     public var heightTitleHeader: CGFloat = 40
     
-    @available(swift, deprecated: 0.5.5, obsoleted: 0.5.6, renamed: "isHiddenTitleHeader")
-    public var isHiddenTitleDate: Bool = false
     public var isHiddenTitleHeader: Bool = false
     
     public var colorDate: UIColor = .black
@@ -377,30 +333,20 @@ public struct MonthStyle {
     public var isPagingEnabled: Bool = false
     public var isScrollEnabled: Bool = true
     
-    @available(swift, deprecated: 0.4.7, obsoleted: 0.4.8, renamed: "autoSelectionDateWhenScrolling")
-    public var isAutoSelectDateScrolling: Bool = false
     public var autoSelectionDateWhenScrolling: Bool = false
     
     public var eventCorners: UIRectCorner = .allCorners
     public var eventCornersRadius: CGSize = CGSize(width: 5, height: 5)
     public var isHiddenDotInTitle: Bool = false
     
-    @available(swift, deprecated: 0.5.5, obsoleted: 0.5.6, renamed: "isHiddenEventTitle")
-    public var isHiddenTitle: Bool = false
     public var isHiddenEventTitle: Bool = false
     
     public var weekDayAlignment: NSTextAlignment = .right
     
-    @available(swift, deprecated: 0.5.5, obsoleted: 0.5.6, renamed: "titleHeaderAlignment")
-    public var titleDateAlignment: NSTextAlignment = .left
     public var titleHeaderAlignment: NSTextAlignment = .left
     
-    @available(swift, deprecated: 0.5.5, obsoleted: 0.5.6, renamed: "fontTitleHeader")
-    public var fontTitleDate: UIFont = .boldSystemFont(ofSize: 30)
     public var fontTitleHeader: UIFont = .boldSystemFont(ofSize: 30)
     
-    @available(swift, deprecated: 0.5.5, obsoleted: 0.5.6, renamed: "colorTitleHeader")
-    public var colorTitleDate: UIColor = .black
     public var colorTitleHeader: UIColor = .black
     
     public var colorTitleCurrentDate: UIColor = .systemRed
@@ -420,12 +366,6 @@ public struct MonthStyle {
 // MARK: Year style
 
 public struct YearStyle {
-    @available(swift, deprecated: 0.4.1, obsoleted: 0.4.2, renamed: "titleFormatter")
-    public var formatter: DateFormatter = {
-        let format = DateFormatter()
-        format.dateFormat = "yyyy"
-        return format
-    }()
     public var titleFormatter: DateFormatter = {
         let format = DateFormatter()
         format.dateFormat = "yyyy"
@@ -492,12 +432,6 @@ public struct AllDayStyle {
     public var titleAlignment: NSTextAlignment = .center
     public var textColor: UIColor = .black
     
-    @available(swift, deprecated: 0.5.0, obsoleted: 0.5.1)
-    public var backgroundColorEvent: UIColor = .clear
-    
-    @available(swift, deprecated: 0.5.0, obsoleted: 0.5.1)
-    public var font: UIFont = .systemFont(ofSize: 12)
-    
     public var offsetWidth: CGFloat = 2
     public var offsetHeight: CGFloat = 2
     public var offsetX: CGFloat = 0
@@ -509,9 +443,6 @@ public struct AllDayStyle {
     public var eventCornersRadius: CGSize = CGSize(width: 5, height: 5)
     public var isHiddenStubEvent: Bool = true
     
-    @available(swift, deprecated: 0.5.0, obsoleted: 0.5.1)
-    public var axis: AxisMode = .vertical
-    
     @available(swift, deprecated: 0.5.0)
     public enum AxisMode: Int {
         case horizontal, vertical
@@ -521,8 +452,6 @@ public struct AllDayStyle {
 // MARK: Event style
 
 public struct EventStyle {
-    @available(swift, deprecated: 0.3.8, obsoleted: 0.3.9, renamed: "states")
-    public var isEnableMoveEvent: Bool = true
     
     public var minimumPressDuration: TimeInterval = 0.5
     public var alphaWhileMoving: CGFloat = 0.5
