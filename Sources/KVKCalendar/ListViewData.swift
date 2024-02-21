@@ -113,7 +113,7 @@ public final class ListViewData: EventDateProtocol {
         var tempSectionList : [SectionListView] = []
         for (index,obj) in sections.enumerated(){
            if let firstFallingDate = obj.events.sorted(by: {$0.start < $1.start}).first {
-               sections[index].date = firstFallingDate
+               sections[index].date = firstFallingDate.start
             }
             guard let idx = tempSectionList.firstIndex(where: { $0.date.kvkYear == obj.date.kvkYear && $0.date.kvkMonth == obj.date.kvkMonth }) else {
                 tempSectionList.append(sections[index])
